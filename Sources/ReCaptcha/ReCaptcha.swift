@@ -97,7 +97,7 @@ public class ReCaptcha {
 
             self.html = rawHTML
             self.apiKey = apiKey
-            self.baseURL = Config.fixSchemeIfNeeded(for: domain)
+            self.baseURL = domain
         }
     }
 
@@ -232,30 +232,4 @@ public class ReCaptcha {
         set { manager.shouldSkipForTests = newValue }
     }
 #endif
-}
-
-// MARK: - Private Methods
-
-private extension ReCaptcha.Config {
-    /**
-     - parameter url: The URL to be fixed
-     - returns: An URL with scheme
-
-     If the given URL has no scheme, prepends `http://` to it and return the fixed URL.
-     */
-    static func fixSchemeIfNeeded(for url: URL) -> URL {
-        guard url.scheme?.isEmpty != false else {
-            return url
-        }
-
-#if DEBUG
-        print("⚠️ WARNING! Protocol not found for ReCaptcha domain (\(url))! You should add http:// or https:// to it!")
-#endif
-
-        if let fixedURL = URL(string: "http://" + url.absoluteString) {
-            return fixedURL
-        }
-
-        return url
-    }
 }
