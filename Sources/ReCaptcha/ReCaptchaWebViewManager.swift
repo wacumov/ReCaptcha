@@ -30,7 +30,7 @@ internal class ReCaptchaWebViewManager {
         didSet {
             // Also works on iOS < 9
             webView.performSelector(
-                onMainThread: "_setCustomUserAgent:",
+                onMainThread: Selector(("_setCustomUserAgent:")),
                 with: forceVisibleChallenge ? Constants.BotUserAgent : nil,
                 waitUntilDone: true
             )
