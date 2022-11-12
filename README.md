@@ -51,7 +51,7 @@ let recaptcha = try? ReCaptcha(
 ...
 ```
 
-#### Alternte endpoint
+#### Alternate endpoint
 
 If your app has firewall limitations that may be blocking Google's API, the JS endpoint may be changed on initialization.
 It'll then point to `https://www.recaptcha.net/recaptcha/api.js`:
