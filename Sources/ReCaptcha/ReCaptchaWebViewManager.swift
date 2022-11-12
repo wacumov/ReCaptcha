@@ -42,7 +42,7 @@ internal class ReCaptchaWebViewManager {
 #endif
 
     /// Sends the result message
-    var completion: ((ReCaptchaResult) -> Void)?
+    var completion: ((Result<String, ReCaptchaError>) -> Void)?
 
     /// Notifies the JS bundle has finished loading
     var onDidFinishLoading: (() -> Void)? {
@@ -131,7 +131,7 @@ internal class ReCaptchaWebViewManager {
      func validate(on view: UIView) {
 #if DEBUG
         guard !shouldSkipForTests else {
-            completion?(.token(""))
+            completion?(.success(""))
             return
         }
 #endif
@@ -187,7 +187,7 @@ fileprivate extension ReCaptchaWebViewManager {
     func handle(result: ReCaptchaDecoder.Result) {
         switch result {
         case .token(let token):
-            completion?(.token(token))
+            completion?(.success(token))
 
         case .error(let error):
             if shouldResetOnError, let view = webView.superview {
@@ -195,7 +195,7 @@ fileprivate extension ReCaptchaWebViewManager {
                 validate(on: view)
             }
             else {
-                completion?(.error(error))
+                completion?(.failure(error))
             }
 
         case .showReCaptcha:

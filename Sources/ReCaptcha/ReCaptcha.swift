@@ -163,7 +163,7 @@ public class ReCaptcha {
 
      Starts the challenge validation
     */
-    public func validate(on view: UIView, resetOnError: Bool = true, completion: @escaping (ReCaptchaResult) -> Void) {
+    public func validate(on view: UIView, resetOnError: Bool = true, completion: @escaping (Result<String, ReCaptchaError>) -> Void) {
         manager.shouldResetOnError = resetOnError
         manager.completion = completion
 
