@@ -47,18 +47,6 @@ public class ReCaptcha {
         /// The base url to be used to resolve relative URLs in the webview
         let baseURL: URL
 
-        /// The Bundle that holds ReCaptcha's assets
-        private static let bundle: Bundle = {
-            let bundle = Bundle(for: ReCaptcha.self)
-            guard let cocoapodsBundle = bundle
-                .path(forResource: "ReCaptcha", ofType: "bundle")
-                .flatMap(Bundle.init(path:)) else {
-                    return bundle
-            }
-
-            return cocoapodsBundle
-        }()
-
         /**
          - parameters:
              - apiKey: The API key sent to the ReCaptcha init
@@ -68,13 +56,13 @@ public class ReCaptcha {
          - Throws: Rethrows any exceptions thrown by `String(contentsOfFile:)`
          */
         public init(apiKey: String, baseURL: URL) throws {
-            guard let filePath = Config.bundle.path(forResource: "recaptcha", ofType: "html") else {
+            guard let fileURL = Bundle.module.url(forResource: "recaptcha", withExtension: "html") else {
                 throw ReCaptchaError.htmlLoadError
             }
 
-            let rawHTML = try String(contentsOfFile: filePath)
+            let html = try String(contentsOf: fileURL)
 
-            self.html = rawHTML
+            self.html = html
             self.apiKey = apiKey
             self.baseURL = baseURL
         }
