@@ -13,13 +13,6 @@ import WebKit
 /**
 */
 public class ReCaptcha {
-    fileprivate struct Constants {
-        struct InfoDictKeys {
-            static let APIKey = "ReCaptchaKey"
-            static let Domain = "ReCaptchaDomain"
-        }
-    }
-
     /// The JS API endpoint to be loaded onto the HTML file.
     public enum Endpoint {
         /** Google's default endpoint. Points to
@@ -69,35 +62,21 @@ public class ReCaptcha {
         /**
          - parameters:
              - apiKey: The API key sent to the ReCaptcha init
-             - infoPlistKey: The API key retrived from the application's Info.plist
              - baseURL: The base URL sent to the ReCaptcha init
-             - infoPlistURL: The base URL retrieved from the application's Info.plist
 
          - Throws: `ReCaptchaError.htmlLoadError`: if is unable to load the HTML embedded in the bundle.
-         - Throws: `ReCaptchaError.apiKeyNotFound`: if an `apiKey` is not provided and can't find one in the project's
-         Info.plist.
-         - Throws: `ReCaptchaError.baseURLNotFound`: if a `baseURL` is not provided and can't find one in the project's
-         Info.plist.
          - Throws: Rethrows any exceptions thrown by `String(contentsOfFile:)`
          */
-        public init(apiKey: String?, infoPlistKey: String?, baseURL: URL?, infoPlistURL: URL?) throws {
+        public init(apiKey: String, baseURL: URL) throws {
             guard let filePath = Config.bundle.path(forResource: "recaptcha", ofType: "html") else {
                 throw ReCaptchaError.htmlLoadError
-            }
-
-            guard let apiKey = apiKey ?? infoPlistKey else {
-                throw ReCaptchaError.apiKeyNotFound
-            }
-
-            guard let domain = baseURL ?? infoPlistURL else {
-                throw ReCaptchaError.baseURLNotFound
             }
 
             let rawHTML = try String(contentsOfFile: filePath)
 
             self.html = rawHTML
             self.apiKey = apiKey
-            self.baseURL = domain
+            self.baseURL = baseURL
         }
     }
 
@@ -126,17 +105,12 @@ public class ReCaptcha {
      - Throws: Rethrows any exceptions thrown by `String(contentsOfFile:)`
      */
     public convenience init(
-        apiKey: String? = nil,
-        baseURL: URL? = nil,
+        apiKey: String,
+        baseURL: URL,
         endpoint: Endpoint = .default,
         locale: Locale? = nil
     ) throws {
-        let infoDict = Bundle.main.infoDictionary
-
-        let plistApiKey = infoDict?[Constants.InfoDictKeys.APIKey] as? String
-        let plistDomain = (infoDict?[Constants.InfoDictKeys.Domain] as? String).flatMap(URL.init(string:))
-
-        let config = try Config(apiKey: apiKey, infoPlistKey: plistApiKey, baseURL: baseURL, infoPlistURL: plistDomain)
+        let config = try Config(apiKey: apiKey, baseURL: baseURL)
 
         self.init(manager: ReCaptchaWebViewManager(
             html: config.html,
